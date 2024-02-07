@@ -1,17 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerInput : MonoBehaviour
+public class PlayerInput : IMovementInput
 {
-    public float MovementHorizontal { get; private set; }
-    public float MovementVertical { get; private set; }
-    public bool Sneak;
-
-    void Update()
+    public Vector2 GetMovementInput()
     {
-        MovementHorizontal = Input.GetAxis("Horizontal");
-        MovementVertical = Input.GetAxis("Vertical");
-        Sneak = Input.GetKey(KeyCode.LeftShift);
+        float moveHorizontal = Input.GetAxisRaw("Horizontal");
+        float moveVertical = Input.GetAxisRaw("Vertical");
+        return new Vector2(moveHorizontal, moveVertical);
     }
 }

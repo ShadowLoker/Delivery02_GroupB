@@ -1,46 +1,33 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+// Player_Movement.cs
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class Player_Movement : Movement
 {
-    public bool IsMoving => _isMoving;
+    public int speed = 1; // Speed of the player in pixels per frame
+    private int pixelsPerUnit = 16; // This should match with your sprite's pixels per unit
+    private IMovementInput input;
 
-    [SerializeField]
-    private float Speed = 5.0f;
-
-    private bool _isMoving;
-    PlayerInput _input;
-    Rigidbody2D _rigidbody;
-
-    void Start()
+    private void Start()
     {
-        _input = GetComponent<PlayerInput>();
-        _rigidbody = GetComponent<Rigidbody2D>();
+        input = new PlayerInput();
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        Move();
+        Move(input);
     }
 
-    private void Move()
+    public override void Move(IMovementInput input)
     {
-        Vector2 direction = new Vector2(_input.MovementHorizontal, _input.MovementVertical) 
-            * (_input.Sneak ? Speed/2 : Speed);
-        _rigidbody.velocity = direction;
-        _isMoving = direction.magnitude > 0.01f;
+        Vector2 movementInput = input.GetMovementInput();
+        Vector3 movement = new Vector3(movementInput.x, movementInput.y, 0.0f).normalized;
 
-        if (_isMoving) LookAt((Vector2)transform.position + direction);
-        else transform.rotation = Quaternion.identity;
-    }
-
-    void LookAt(Vector2 targetPosition)
-    {
-        float angle = 0.0f;
-        Vector3 relative = transform.InverseTransformPoint(targetPosition);
-        angle = Mathf.Atan2(relative.x, relative.y) * Mathf.Rad2Deg;
-        transform.Rotate(0, 0, -angle);
+        if (movement != Vector3.zero)
+        {
+            Vector3 newPosition = transform.position + movement * ((float)speed) / pixelsPerUnit;
+            newPosition.x = Mathf.Round(newPosition.x * pixelsPerUnit) / pixelsPerUnit;
+            newPosition.y = Mathf.Round(newPosition.y * pixelsPerUnit) / pixelsPerUnit;
+            transform.position = newPosition;
+        }
     }
 }
