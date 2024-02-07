@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
-    public float MovementHorizontal { get; private set; }
-    public float MovementVertical { get; private set; }
+    public Vector2 MovementInput { get; private set; }
     public bool Sneak;
 
     void Update()
     {
-        MovementHorizontal = Input.GetAxis("Horizontal");
-        MovementVertical = Input.GetAxis("Vertical");
+        MovementInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
+
         Sneak = Input.GetKey(KeyCode.LeftShift);
     }
 }
