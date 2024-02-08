@@ -8,4 +8,9 @@ public class PlayerInput : IMovementInput
         float moveVertical = Input.GetAxisRaw("Vertical");
         return new Vector2(moveHorizontal, moveVertical);
     }
+
+    public bool GetCrouchInput()
+    {
+        return Input.GetKey(KeyCode.LeftShift);
+    }
 }

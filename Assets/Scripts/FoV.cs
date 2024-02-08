@@ -11,14 +11,29 @@ public class FoV : MonoBehaviour
     public LayerMask targetMask;
     public LayerMask obstacleMask;
 
+    public float soundDetectionRadius;
+
     private Mesh viewMesh;
     public GameObject player;
+
+    private Player_Movement playerMovement;
+
+    public enum PlayerDetectionState
+    {
+        NotDetected,
+        PartiallyDetected,
+        FullyDetected
+    }
 
     private void Start()
     {
         viewMesh = new Mesh();
         viewMesh.name = "View Mesh";
         GetComponent<MeshFilter>().mesh = viewMesh;
+        //get PlayerMovement script from player
+        playerMovement = player.GetComponent<Player_Movement>();
+
+
     }
 
     private void LateUpdate()
@@ -109,24 +124,35 @@ public class FoV : MonoBehaviour
         }
     }
 
-    public bool IsPlayerInFieldOfView()
+
+    public PlayerDetectionState IsPlayerInFieldOfView()
     {
         Vector3 dirToPlayer = player.transform.position - transform.position;
         float angleToPlayer = Vector3.Angle(transform.up, dirToPlayer);
+        float distanceToPlayer = dirToPlayer.magnitude;
 
-        if (angleToPlayer < viewAngle / 2f)
+        if (angleToPlayer < viewAngle / 2f && distanceToPlayer < viewRadius)
         {
-            float distanceToPlayer = dirToPlayer.magnitude;
-
-            if (distanceToPlayer < viewRadius)
+            // Check for full detection
+            if (!Physics2D.Raycast(transform.position, dirToPlayer, distanceToPlayer, obstacleMask))
             {
-                if (!Physics2D.Raycast(transform.position, dirToPlayer, distanceToPlayer, obstacleMask))
-                {
-                    return true;
-                }
+                return PlayerDetectionState.FullyDetected;
             }
         }
 
-        return false;
+        // Check for partial detection
+        if (!playerMovement.isCrouching && playerMovement.isMoving && Vector3.Distance(transform.position, player.transform.position) < soundDetectionRadius)
+        {
+            return PlayerDetectionState.PartiallyDetected;
+        }
+
+        return PlayerDetectionState.NotDetected;
     }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, soundDetectionRadius);
+    }
+
 }
