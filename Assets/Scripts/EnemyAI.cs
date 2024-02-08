@@ -31,74 +31,41 @@ public class EnemyAI : MonoBehaviour
 
     void DetectPlayer()
     {
-        // Calculate the direction from the enemy to the player
-        Vector2 directionToPlayer = (player.position - transform.position).normalized;
+        Vector2 directionToPlayer = player.position - transform.position; // The direction from the enemy to the player
+        float distanceToPlayer = directionToPlayer.magnitude; // The distance from the enemy to the player
 
-        // Calculate the start and end angles for the detection cone
-        float startAngle = Vector2.SignedAngle(Vector2.right, directionToPlayer) - detectionAngle / 2;
-        float endAngle = startAngle + detectionAngle;
-
-        // Define the number of rays to cast
-        int rayCount = 10;
-
-        // Calculate the angle between each ray
-        float angleBetweenRays = (endAngle - startAngle) / (rayCount - 1);
-
-        // Initialize a flag to indicate whether the player has been detected
-        bool playerDetected = false;
-
-        // Cast the rays
-        for (int i = 0; i < rayCount; i++)
+        // If the player is within the detection range
+        if (distanceToPlayer <= detectionRange)
         {
-            // Calculate the direction of the current ray
-            float currentAngle = startAngle + i * angleBetweenRays;
-            Vector2 rayDirection = new Vector2(Mathf.Cos(currentAngle * Mathf.Deg2Rad), Mathf.Sin(currentAngle * Mathf.Deg2Rad));
+            // Calculate the angle between the enemy's forward direction and the direction to the player
+            float angle = Vector2.Angle(transform.up, directionToPlayer);
 
-            // Cast the ray
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, rayDirection, detectionRange);
-
-            // If the ray hit something...
-            if (hit.collider != null)
+            // If the player is within the detection angle
+            if (angle <= detectionAngle * 0.5f) // We multiply by 0.5 because the angle is the total angle of the cone, not from the middle to the side
             {
-                // If the ray hit a wall, stop casting further rays in this direction
-                if (hit.collider.gameObject.CompareTag("Wall"))
-                {
-                    continue;
-                }
+                Debug.Log("Player detected");
+                ChasePlayer(directionToPlayer.normalized); // Chase the player
 
-                // If the ray hit the player, set the flag to true and break the loop
-                if (hit.collider.gameObject.CompareTag("Player"))
-                {
-                    playerDetected = true;
-                    break;
-                }
+                // Draw a raycast pointing towards the player
+                Debug.DrawRay(transform.position, directionToPlayer, Color.green);
+                return; // Exit the function here to prevent the enemy's velocity from being set to zero below
             }
         }
 
-        // If the player was detected, chase the player
-        if (playerDetected)
+        // If the player is not detected, stop the enemy
+        rb.velocity = Vector2.zero;
+
+        // Draw the detection cone
+        float coneResolution = 10; // The number of rays to draw for the cone
+        for (int i = 0; i <= coneResolution; i++)
         {
-            ChasePlayer(directionToPlayer);
-        }
-        for (int i = 0; i < rayCount; i++)
-        {
-            // Calculate the direction of the current ray
-            float currentAngle = startAngle + i * angleBetweenRays;
-            Vector2 rayDirection = new Vector2(Mathf.Cos(currentAngle * Mathf.Deg2Rad), Mathf.Sin(currentAngle * Mathf.Deg2Rad));
-
-            // Cast the ray
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, rayDirection, detectionRange);
-
-            // Draw the ray in the Scene view
-            Debug.DrawRay(transform.position, rayDirection * detectionRange, Color.red);
-
-            // If the ray hit something...
-            if (hit.collider != null)
-            {
-                // ... (same as before)
-            }
+            float interpolation = (float)i / coneResolution; // The interpolation factor
+            float angle = Mathf.Lerp(-detectionAngle * 0.5f, detectionAngle * 0.5f, interpolation);
+            Vector2 coneDirection = Quaternion.Euler(0, 0, angle) * transform.up;
+            Debug.DrawRay(transform.position, coneDirection * detectionRange, Color.red);
         }
     }
+
 
 
     void ChasePlayer(Vector2 direction)
