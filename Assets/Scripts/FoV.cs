@@ -42,12 +42,15 @@ public class FoV : MonoBehaviour
 
         int vertexCount = viewPoints.Count + 1;
         Vector3[] vertices = new Vector3[vertexCount];
+        Vector2[] uvs = new Vector2[vertexCount]; // Add this line
         int[] triangles = new int[(vertexCount - 2) * 3];
 
         vertices[0] = Vector3.zero;
+        uvs[0] = new Vector2(0.5f, 0); // Add this line
         for (int i = 0; i < vertexCount - 1; i++)
         {
             vertices[i + 1] = transform.InverseTransformPoint(viewPoints[i]);
+            uvs[i + 1] = new Vector2(0.5f, Mathf.Clamp01(vertices[i + 1].magnitude / viewRadius)); // Add this line
 
             if (i < vertexCount - 2)
             {
@@ -59,9 +62,11 @@ public class FoV : MonoBehaviour
 
         viewMesh.Clear();
         viewMesh.vertices = vertices;
+        viewMesh.uv = uvs; // Add this line
         viewMesh.triangles = triangles;
         viewMesh.RecalculateNormals();
     }
+
 
 
     ViewCastInfo ViewCast(float globalAngle)
