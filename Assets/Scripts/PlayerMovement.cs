@@ -1,6 +1,6 @@
 // Player_Movement.cs
 using UnityEngine;
-public class Player_Movement : Movement
+public class PlayerMovement : MonoBehaviour
 {
     public int speed = 2; // Speed of the player in pixels per frame
     public int crouchSpeed = 1; // Speed of the player when crouching
@@ -11,22 +11,28 @@ public class Player_Movement : Movement
 
     private Rigidbody2D rb;
 
+
     private void Start()
     {
-        input = new PlayerInput();
+        
         rb = GetComponent<Rigidbody2D>();
+    }
+
+    public void SetInput(IMovementInput inputB) // Change this to IMovementInput
+    {
+        input = inputB;
     }
 
     private void FixedUpdate()
     {
-        Move(input);
+        Move();
     }
 
-    public override void Move(IMovementInput input)
+    public void Move()
     {
         Vector2 movementInput = input.GetMovementInput();
         isCrouching = input.GetCrouchInput();
-
+        Debug.Log("Movement input: " + movementInput);
 
         Vector3 movement = new Vector3(movementInput.x, movementInput.y, 0.0f);
 

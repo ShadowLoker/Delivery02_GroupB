@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,15 +10,29 @@ public class FoV : MonoBehaviour
     [Range(0, 360)]
     public float viewAngle;
 
+    public float maxViewRadius; // The maximum view radius
+    public float minViewRadius; // The maximum view radius
+    public float maxViewAngle; // The minimum view angle
+    public float minViewAngle; // The minimum view angle
+
+    private Coroutine changeFovCoroutine;
+
+    public float fovChangeSpeed; // The speed at which the field of view changes
+
     public LayerMask targetMask;
     public LayerMask obstacleMask;
 
     public float soundDetectionRadius;
 
     private Mesh viewMesh;
+    private MeshRenderer viewMeshRenderer;
     public GameObject player;
 
-    private Player_Movement playerMovement;
+    private PlayerMovement playerMovement;
+
+    private float partialDetectionMeter = 0f;
+    private float partialDetectionThreshold = 10f; // Set this to the value you want
+
 
     public enum PlayerDetectionState
     {
@@ -30,8 +46,9 @@ public class FoV : MonoBehaviour
         viewMesh = new Mesh();
         viewMesh.name = "View Mesh";
         GetComponent<MeshFilter>().mesh = viewMesh;
+        viewMeshRenderer = GetComponent<MeshRenderer>();
         //get PlayerMovement script from player
-        playerMovement = player.GetComponent<Player_Movement>();
+        playerMovement = player.GetComponent<PlayerMovement>();
 
 
     }
@@ -43,6 +60,48 @@ public class FoV : MonoBehaviour
         DrawFieldOfView();
     }
 
+    public void StartChangingFieldOfView(bool increaseFov)
+    {
+        if (changeFovCoroutine != null)
+        {
+            StopCoroutine(changeFovCoroutine);
+        }
+        changeFovCoroutine = StartCoroutine(ChangeFieldOfView(increaseFov));
+    }
+
+    private IEnumerator ChangeFieldOfView(bool increaseFov)
+    {
+        if (increaseFov)
+        {
+            while (viewRadius < maxViewRadius || viewAngle > minViewAngle)
+            {
+                if (viewRadius < maxViewRadius)
+                {
+                    viewRadius += Time.deltaTime * fovChangeSpeed;
+                }
+                if (viewAngle > minViewAngle)
+                {
+                    viewAngle -= Time.deltaTime * fovChangeSpeed * 40;
+                }
+                yield return null;
+            }
+        }
+        else
+        {
+            while (viewRadius > minViewRadius || viewAngle < maxViewAngle)
+            {
+                if (viewRadius > minViewRadius)
+                {
+                    viewRadius -= Time.deltaTime * fovChangeSpeed;
+                }
+                if (viewAngle < maxViewAngle)
+                {
+                    viewAngle += Time.deltaTime * fovChangeSpeed * 40;
+                }
+                yield return null;
+            }
+        }
+    }
     void DrawFieldOfView()
     {
         int stepCount = Mathf.RoundToInt(viewAngle * 100);
@@ -127,15 +186,19 @@ public class FoV : MonoBehaviour
 
     public PlayerDetectionState IsPlayerInFieldOfView()
     {
+        Debug.Log(partialDetectionMeter);
         Vector3 dirToPlayer = player.transform.position - transform.position;
         float angleToPlayer = Vector3.Angle(transform.up, dirToPlayer);
         float distanceToPlayer = dirToPlayer.magnitude;
 
+        float colorIntensity = partialDetectionMeter / partialDetectionThreshold;
+        viewMeshRenderer.material.color = new Color(1, 1 - colorIntensity, 0, 0.2f);
         if (angleToPlayer < viewAngle / 2f && distanceToPlayer < viewRadius)
         {
             // Check for full detection
             if (!Physics2D.Raycast(transform.position, dirToPlayer, distanceToPlayer, obstacleMask))
             {
+                partialDetectionMeter = partialDetectionThreshold;          
                 return PlayerDetectionState.FullyDetected;
             }
         }
@@ -143,9 +206,20 @@ public class FoV : MonoBehaviour
         // Check for partial detection
         if (!playerMovement.isCrouching && playerMovement.isMoving && Vector3.Distance(transform.position, player.transform.position) < soundDetectionRadius)
         {
+            partialDetectionMeter += Time.deltaTime * 5;
+            if (partialDetectionMeter >= partialDetectionThreshold)
+            {
+                
+                return PlayerDetectionState.FullyDetected;
+            }
+            // Interpolate color based on partialDetectionMeter
+            
+             // Orange to Red
             return PlayerDetectionState.PartiallyDetected;
         }
 
+        if (partialDetectionMeter > 0) partialDetectionMeter -= Time.deltaTime * 4; // Reset the meter when the player is not detected
+        
         return PlayerDetectionState.NotDetected;
     }
 

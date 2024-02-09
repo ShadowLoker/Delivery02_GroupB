@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerInput : IMovementInput
+public class PlayerInput : IMovementInput, IInteractionInput
 {
     public Vector2 GetMovementInput()
     {
@@ -12,5 +12,10 @@ public class PlayerInput : IMovementInput
     public bool GetCrouchInput()
     {
         return Input.GetKey(KeyCode.LeftShift);
+    }
+
+    public bool GetInteractionInput()
+    {
+        return Input.GetKeyDown(KeyCode.Space);
     }
 }
