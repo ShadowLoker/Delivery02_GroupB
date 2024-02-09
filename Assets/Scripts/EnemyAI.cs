@@ -17,7 +17,7 @@ public class EnemyAI : MonoBehaviour
     public float patrolSpeed = 0.5f; // Speed of the enemy while patrolling
     public float waitTime = 2f; // Time to wait at each patrol point
 
-    private bool isPatrolling = true; // Is the enemy currently patrolling?
+    public bool isPatrolling = true; // Is the enemy currently patrolling?
 
 
 
@@ -41,21 +41,23 @@ public class EnemyAI : MonoBehaviour
         switch (detectionState)
         {
             case PlayerDetectionState.FullyDetected:
+                StopAllCoroutines();
                 isPatrolling = false;
+                rb.velocity = Vector2.zero;
                 Vector2 directionToPlayer = (player.position - transform.position).normalized;
                 ChasePlayer(directionToPlayer);
                 break;
 
-            case PlayerDetectionState.PartiallyDetected:
-                isPatrolling = false;
-                rb.velocity = Vector2.zero; // Stop moving
-                break;
+            
 
             case PlayerDetectionState.NotDetected:
+
+                rb.velocity = Vector2.zero;
                 if (!isPatrolling)
                 {
                     rb.velocity = Vector2.zero;
-                    StartCoroutine(ReturnToPatrolAfterDelay());
+                    
+                    StartCoroutine(ReturnToPatrol());
                 }
                 break;
         }
@@ -64,55 +66,76 @@ public class EnemyAI : MonoBehaviour
 
     IEnumerator Patrol()
     {
+        isPatrolling = true;
         while (isPatrolling)
         {
             if (Vector2.Distance(transform.position, patrolPoints[currentPatrolIndex].position) < 0.2f)
             {
                 currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
-                yield return new WaitForSeconds(waitTime);
+                isPatrolling = false;
+                
+                ReturnToPatrol();
+                
             }
             else
             {
                 Vector2 direction = (patrolPoints[currentPatrolIndex].position - transform.position).normalized;
                 rb.velocity = direction * patrolSpeed;
                 Vector2 roundedDirection = RoundDirectionToEightWay(direction);
-                RotateToDirection(roundedDirection);
+                RotateToDirection(roundedDirection, 200f);
                 yield return null;
             }
         }
     }
 
-    IEnumerator ReturnToPatrolAfterDelay()
+    IEnumerator ReturnToPatrol()
     {
-        yield return new WaitForSeconds(waitTime);
-        isPatrolling = true;
+        rb.velocity = Vector2.zero; // Stop the enemy
+        yield return new WaitForSeconds(waitTime); // Wait at the patrol point
+        Vector2 directionToNextPatrolPoint = (patrolPoints[currentPatrolIndex].position - transform.position).normalized;
+        Vector2 roundedDirection = RoundDirectionToEightWay(directionToNextPatrolPoint);
+        // Start the rotation coroutine
+        yield return StartCoroutine(RotateToDirection(roundedDirection, 200f)); // Rotate over 1 second
         StartCoroutine(Patrol());
     }
 
+
+
     void ChasePlayer(Vector2 direction)
     {
+        
         Vector2 roundedDirection = RoundDirectionToEightWay(direction);
-        RotateToDirection(roundedDirection);
-
-        //move enemy to player
-
+            if (timeSinceLastDirectionChange >= directionChangeCooldown)
+            {
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                transform.rotation = Quaternion.Euler(0, 0, angle - 90); // Subtract 90 to align the enemy's up direction with the direction
+                timeSinceLastDirectionChange = 0f; // Reset the timer
+            }
+            timeSinceLastDirectionChange += Time.fixedDeltaTime;
         rb.velocity = roundedDirection * speed;
-
     }
 
-    void RotateToDirection(Vector2 direction)
+    IEnumerator RotateToDirection(Vector2 direction, float speed)
     {
-        // Rotate the enemy to face the direction
-        if (timeSinceLastDirectionChange >= directionChangeCooldown)
-        {
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0, 0, angle - 90); // Subtract 90 to align the enemy's up direction with the direction
-            timeSinceLastDirectionChange = 0f; // Reset the timer
-        }
+        // Calculate the target angle
+        float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90;
 
-        // Update the timer
-        timeSinceLastDirectionChange += Time.fixedDeltaTime;
+        // Calculate the target rotation
+        Quaternion targetRotation = Quaternion.Euler(0, 0, targetAngle);
+
+        // Rotate the enemy to face the direction
+        while (Quaternion.Angle(transform.rotation, targetRotation) > 0.01f)
+        {
+            // Interpolate between the current rotation and the target rotation
+            float step = speed * Time.deltaTime;
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, step);
+
+            yield return null;
+        }
     }
+
+
+
     Vector2 RoundDirectionToEightWay(Vector2 direction)
     {
         float step = 45.0f;

@@ -9,9 +9,12 @@ public class Player_Movement : Movement
     public bool isCrouching;
     public bool isMoving;
 
+    private Rigidbody2D rb;
+
     private void Start()
     {
         input = new PlayerInput();
+        rb = GetComponent<Rigidbody2D>();
     }
 
     private void FixedUpdate()
@@ -34,6 +37,10 @@ public class Player_Movement : Movement
             movement = movement.normalized * currentSpeed * Time.fixedDeltaTime;
             transform.position += movement;
         }
-        else isMoving = false;
+        else
+        {
+            isMoving = false;
+            rb.velocity = Vector2.zero;
+        }
     }
 }
