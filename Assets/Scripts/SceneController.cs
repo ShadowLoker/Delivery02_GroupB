@@ -21,6 +21,18 @@ public class SceneController : MonoBehaviour
             Debug.Log(e);
         }
     }
+    public void LoadScene(String sceneName)
+    {
+        try
+        {
+            SceneManager.LoadScene(sceneName);
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+        }
+    }
     public void ReloadScene()
     {
         try
@@ -33,4 +45,10 @@ public class SceneController : MonoBehaviour
             Debug.Log(e.Message);
         }
     }
+    public void Exit()
+    {
+        Debug.Log("Out");
+        Application.Quit();
+    }
+
 }
