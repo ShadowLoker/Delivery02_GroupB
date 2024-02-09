@@ -33,17 +33,17 @@ public class FieldOfView : MonoBehaviour
         int triangleIndex = 0;
         for (int i = 0; i <= rayCount; i++)
         {
-            Vector3 vertex= origin + GetVectorFromAngle(angle) * viewDistance;
+            Vector2 vertex = origin + GetVectorFromAngle(angle) * viewDistance;
             RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, GetVectorFromAngle(angle), viewDistance);
 
-            //if (raycastHit2D.collider == null)
-            //{
-                //vertex = origin + GetVectorFromAngle(angle) * viewDistance;
-            //}
-            //else
-            //{
+            if (raycastHit2D.collider != null)
+            {
                 vertex = raycastHit2D.point;
-            //}
+            }
+            else
+            {
+                vertex = origin + GetVectorFromAngle(angle) * viewDistance;
+            }
 
             vertices[vertexIndex] = vertex;
 
