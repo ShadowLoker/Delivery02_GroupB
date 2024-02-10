@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +15,7 @@ public class EnemyAI : MonoBehaviour
     public delegate void pathComplete();
     public pathComplete OnPathComplete;
 
-    public Transform[] patrolPoints; // The patrol points
+    public List<Tile> pathPoints; // The patrol points
     private int currentPatrolIndex = 0; // The current patrol point index
     public float patrolSpeed = 0.5f; // Speed of the enemy while patrolling
     public float waitTime = 2f; // Time to wait at each patrol point
@@ -76,9 +77,9 @@ public class EnemyAI : MonoBehaviour
         
         while (isPatrolling)
         {
-            if (Vector2.Distance(transform.position, patrolPoints[currentPatrolIndex].position) < 0.2f)
+            if (Vector2.Distance(transform.position, pathPoints[currentPatrolIndex].transform.position) < 0.2f)
             {
-                currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
+                currentPatrolIndex = (currentPatrolIndex + 1) % pathPoints.Count;
                 isPatrolling = false;
                 OnPathComplete?.Invoke();
                 ReturnToPatrol();
@@ -86,7 +87,7 @@ public class EnemyAI : MonoBehaviour
             }
             else
             {
-                Vector2 direction = (patrolPoints[currentPatrolIndex].position - transform.position).normalized;
+                Vector2 direction = (pathPoints[currentPatrolIndex].transform.position - transform.position).normalized;
                 rb.velocity = direction * patrolSpeed;
                 Vector2 roundedDirection = RoundDirectionToEightWay(direction);
                 RotateToDirection(roundedDirection, 200f);
@@ -99,7 +100,7 @@ public class EnemyAI : MonoBehaviour
     {
         rb.velocity = Vector2.zero; // Stop the enemy
         yield return new WaitForSeconds(waitTime); // Wait at the patrol point
-        Vector2 directionToNextPatrolPoint = (patrolPoints[currentPatrolIndex].position - transform.position).normalized;
+        Vector2 directionToNextPatrolPoint = (pathPoints[currentPatrolIndex].transform.position - transform.position).normalized;
         Vector2 roundedDirection = RoundDirectionToEightWay(directionToNextPatrolPoint);
         // Start the rotation coroutine
         yield return StartCoroutine(RotateToDirection(roundedDirection, 200f)); // Rotate over 1 second
@@ -116,7 +117,7 @@ public class EnemyAI : MonoBehaviour
         Vector2 roundedDirection = RoundDirectionToEightWay(direction);
         
 
-        float angle = Mathf.Atan2(roundedDirection.y, roundedDirection.x) * Mathf.Rad2Deg;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0, 0, angle - 90); // Subtract 90 to align the enemy's up direction with the direction
 
 
@@ -152,5 +153,10 @@ public class EnemyAI : MonoBehaviour
         angle = Mathf.Round(angle / (step * Mathf.Deg2Rad)) * (step * Mathf.Deg2Rad);
 
         return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+    }
+
+    internal void SetPathPoints(List<Tile> path)
+    {
+        pathPoints = path;
     }
 }

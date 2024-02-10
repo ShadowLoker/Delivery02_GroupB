@@ -946,10 +946,7 @@ MonoBehaviour:
   fov: {fileID: 1944751227}
   player: {fileID: 614941334}
   speed: 2
-  patrolPoints:
-  - {fileID: 148862390}
-  - {fileID: 1779763880}
-  - {fileID: 1876171831}
+  pathPoints: []
   patrolSpeed: 0.5
   waitTime: 2
   isPatrolling: 1

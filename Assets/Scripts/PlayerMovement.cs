@@ -49,4 +49,10 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = Vector2.zero;
         }
     }
+
+    internal Tile GetCurrentTile()
+    {
+        GridManager gridManager = FindObjectOfType<GridManager>();
+        return gridManager.GetTileAt(transform.position);
+    }
 }
