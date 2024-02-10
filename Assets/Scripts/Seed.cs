@@ -31,6 +31,13 @@ public static class Seed
             roomLayout[width - 1, y] = false;
         }
 
+        // Set some inner walls
+        for (int x = 2; x < width - 2; x++)
+        {
+            roomLayout[x, 2] = false;
+            roomLayout[x, height - 3] = false;
+        }
+
         return roomLayout;
 
     }

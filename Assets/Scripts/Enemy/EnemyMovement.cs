@@ -5,12 +5,15 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
+    public delegate void PathComplete();
+    public PathComplete OnPathComplete;
+
     [SerializeField]
     private float CooldownTime;
 
-    public List<Tile> _patrolPoints;
+    public List<Tile> _path;
 
-    private int _currentPatrolPoint = 0;
+    private int _currentPathPosition = 0;
     [SerializeField]
     private float _speed = 2;
     [SerializeField]
@@ -40,11 +43,12 @@ public class EnemyMovement : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody2D>();
         _alarm = GetComponentInChildren<EnemyAlarm>();
+        OnPathComplete?.Invoke();
 
     }
     public void SetPatrolPoints(List<Tile> patrolPoints)
     {
-        _patrolPoints = patrolPoints;
+        _path = patrolPoints;
     }
 
     // Update is called once per frame
@@ -57,8 +61,8 @@ public class EnemyMovement : MonoBehaviour
             _direction = (_player.position - transform.position).normalized;
 
         else if (_currentState == State.Patrolling)
-            if(_patrolPoints.Count > 0)
-                _direction = (_patrolPoints[_currentPatrolPoint].transform.position - transform.position).normalized;
+            if(_path.Count > 0)
+                _direction = (_path[_currentPathPosition].transform.position - transform.position).normalized;
 
         if(_currentState==State.Cooldown) 
         {
@@ -68,7 +72,7 @@ public class EnemyMovement : MonoBehaviour
             if(_cooldown <= 0)
                 _currentState = State.Patrolling;
         }
-        else if(_patrolPoints.Count > 0)
+        else if(_path.Count > 0)
         {
             Move(_direction);
             CheckPosition();
@@ -91,29 +95,20 @@ public class EnemyMovement : MonoBehaviour
     }
     void CheckPosition()
     {
-        if(Vector2.Distance(transform.position, _patrolPoints[_currentPatrolPoint].transform.position) < 0.1f)
+        if(Vector2.Distance(transform.position, _path[_currentPathPosition].transform.position) < 0.1f)
         {
             if (_currentState == State.Patrolling)
             {
-                _currentPatrolPoint++;
-                _cooldown = CooldownTime;
-                _currentState = State.Cooldown;
+                _currentPathPosition++;
 
-                if (_currentPatrolPoint >= _patrolPoints.Count)
+                if (_currentPathPosition >= _path.Count)
                 {
-                    _currentPatrolPoint = 1;
-                    _patrolPoints.Reverse();
+                    _currentPathPosition = 0;
+                    OnPathComplete?.Invoke();
+                    _cooldown = CooldownTime;
+                    _currentState = State.Cooldown;
                 }
             }
         }
-    }
-
-    public void SetCurrentTile(Tile current)
-    {
-        _currentTile = current;
-    }
-    internal Tile GetCurrentTile()
-    {
-        return _currentTile;
     }
 }

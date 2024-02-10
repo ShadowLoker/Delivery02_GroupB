@@ -7,20 +7,49 @@ public class EnemyController : MonoBehaviour
     
     private List<Tile> path;
     private EnemyMovement enemyMovement;
-    private PlayerInput playerInput;
 
+    public Transform PointA;
+    public Transform PointB;
+
+    private void Awake()
+    {   
+        enemyMovement = GetComponent<EnemyMovement>();
+        enemyMovement.OnPathComplete += SearchPath;
+    }
     private void Start()
     {
-        enemyMovement = GetComponent<EnemyMovement>();
-        playerInput = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerInput>();
-        SearchPath();
+        
     }
 
     public void SearchPath()
     {
-        path = FindPath.FindPathAStar(enemyMovement.GetCurrentTile(), playerInput.GetCurrentTile());
+        path = FindPath.FindPathAStar(GetCurrentTile(), GetNextPoint());
         enemyMovement.SetPatrolPoints(path);
     }
 
+    private void OnDestroy()
+    {
+        enemyMovement.OnPathComplete -= SearchPath;
+    }
+
+
+    internal Tile GetCurrentTile()
+    {
+        GridManager gridManager = FindObjectOfType<GridManager>();
+        return gridManager.GetTileAt(transform.position);
+    }
+
+    internal Tile GetNextPoint()
+    {
+        GridManager gridManager = FindObjectOfType<GridManager>();
+        if (gridManager.GetTileAt(transform.position) == gridManager.GetTileAt(PointA.position))
+        {
+            return gridManager.GetTileAt(PointB.position);
+        }
+        else
+        {
+            return gridManager.GetTileAt(PointA.position);
+        }
+    }
 
 }

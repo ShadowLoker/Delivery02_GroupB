@@ -50,4 +50,19 @@ public class GridManager : MonoBehaviour
             }
         }
     }
+
+    internal Tile GetTileAt(Vector3 position)
+    {
+        float x = position.x - transform.position.x;
+        float y = position.y - transform.position.y;
+        x/=walkTilePrefab.transform.localScale.x;
+        y/=walkTilePrefab.transform.localScale.y;
+        int xIndex = Mathf.RoundToInt(x);
+        int yIndex = Mathf.RoundToInt(y);
+        if (xIndex < 0 || xIndex >= columns || yIndex < 0 || yIndex >= rows)
+        {
+            return null;
+        }
+        return grid[xIndex, yIndex].GetComponent<Tile>();
+    }
 }

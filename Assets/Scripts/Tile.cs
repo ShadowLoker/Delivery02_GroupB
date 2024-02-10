@@ -11,11 +11,6 @@ public class Tile : MonoBehaviour
     private Tile left;
     private Tile right;
 
-    private Tile topLeft;
-    private Tile topRight;
-    private Tile bottomLeft;
-    private Tile bottomRight;
-
     public int gCost { get; private set;}
     public int hCost { get; private set;}
     public int fCost { get { return gCost + hCost; } }
@@ -40,10 +35,6 @@ public class Tile : MonoBehaviour
             Debug.Log("Bottom: " + (bottom == null ? "null" : bottom.name));
             Debug.Log("Left: " + (left == null ? "null" : left.name));
             Debug.Log("Right: " + (right == null ? "null" : right.name));
-            Debug.Log("TopLeft: " + (topLeft == null ? "null" : topLeft.name));
-            Debug.Log("TopRight: " + (topRight == null ? "null" : topRight.name));
-            Debug.Log("BottomLeft: " + (bottomLeft == null ? "null" : bottomLeft.name));
-            Debug.Log("BottomRight: " + (bottomRight == null ? "null" : bottomRight.name));
         }
     }
     
@@ -52,20 +43,7 @@ public class Tile : MonoBehaviour
         if(left == null)
             return;
         this.left = left;
-        left.right = this;
-        if(left.top != null)
-        {
-            topLeft = left.top;
-            topLeft.bottomRight = this;
-        }
-
-        if(left.bottom != null)
-        {
-            bottomLeft = left.bottom;
-            bottomLeft.topRight = this;
-        }
-            
-            
+        left.right = this;     
     }
     public void SetBottom(Tile bottom)
     {
@@ -73,12 +51,6 @@ public class Tile : MonoBehaviour
             return;
         this.bottom = bottom;
         bottom.top = this;
-        if(bottom.right != null)
-        {
-            bottomRight = bottom.right;
-            bottomRight.topLeft = this;
-        }
-
     }
 
     public static IEnumerable<Tile> GetNeighbours(Tile currentTile)
@@ -102,22 +74,6 @@ public class Tile : MonoBehaviour
         {
             neighbours.Add(currentTile.right);
         }
-        if (currentTile.topLeft != null)
-        {
-            neighbours.Add(currentTile.topLeft);
-        }
-        if (currentTile.topRight != null)
-        {
-            neighbours.Add(currentTile.topRight);
-        }
-        if (currentTile.bottomLeft != null)
-        {
-            neighbours.Add(currentTile.bottomLeft);
-        }
-        if (currentTile.bottomRight != null)
-        {
-            neighbours.Add(currentTile.bottomRight);
-        }
 
         return neighbours;
     }
@@ -130,16 +86,5 @@ public class Tile : MonoBehaviour
     internal void SetHCost(int v)
     {
         hCost = v;
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if(collision.gameObject.CompareTag("Player"))
-        {
-            collision.gameObject.GetComponent<PlayerInput>().SetCurrentTile(this);
-        }else if(collision.gameObject.CompareTag("Enemy"))
-        {
-            collision.gameObject.GetComponent<EnemyMovement>().SetCurrentTile(this);
-        }
     }
 }
