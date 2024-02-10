@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,7 +8,8 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField]
     private float CooldownTime;
 
-    public List<Transform> _patrolPoints;
+    public List<Tile> _patrolPoints;
+
     private int _currentPatrolPoint = 0;
     [SerializeField]
     private float _speed = 2;
@@ -19,6 +21,9 @@ public class EnemyMovement : MonoBehaviour
     private Transform _player;
     private EnemyAlarm _alarm;
     private Rigidbody2D _rigidbody;
+
+    [SerializeField]
+    private Tile _currentTile;
 
     public enum State
     {
@@ -37,6 +42,10 @@ public class EnemyMovement : MonoBehaviour
         _alarm = GetComponentInChildren<EnemyAlarm>();
 
     }
+    public void SetPatrolPoints(List<Tile> patrolPoints)
+    {
+        _patrolPoints = patrolPoints;
+    }
 
     // Update is called once per frame
     void Update()
@@ -48,8 +57,8 @@ public class EnemyMovement : MonoBehaviour
             _direction = (_player.position - transform.position).normalized;
 
         else if (_currentState == State.Patrolling)
-
-            _direction = (_patrolPoints[_currentPatrolPoint].position - transform.position).normalized;
+            if(_patrolPoints.Count > 0)
+                _direction = (_patrolPoints[_currentPatrolPoint].transform.position - transform.position).normalized;
 
         if(_currentState==State.Cooldown) 
         {
@@ -59,7 +68,7 @@ public class EnemyMovement : MonoBehaviour
             if(_cooldown <= 0)
                 _currentState = State.Patrolling;
         }
-        else
+        else if(_patrolPoints.Count > 0)
         {
             Move(_direction);
             CheckPosition();
@@ -82,7 +91,7 @@ public class EnemyMovement : MonoBehaviour
     }
     void CheckPosition()
     {
-        if(Vector2.Distance(transform.position, _patrolPoints[_currentPatrolPoint].position) < 0.1f)
+        if(Vector2.Distance(transform.position, _patrolPoints[_currentPatrolPoint].transform.position) < 0.1f)
         {
             if (_currentState == State.Patrolling)
             {
@@ -99,4 +108,12 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
+    public void SetCurrentTile(Tile current)
+    {
+        _currentTile = current;
+    }
+    internal Tile GetCurrentTile()
+    {
+        return _currentTile;
+    }
 }

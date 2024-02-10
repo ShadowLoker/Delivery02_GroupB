@@ -31,7 +31,7 @@ public class GridManager : MonoBehaviour
                 grid[x, y] = tile;
                 try
                 {
-                    tile.GetComponent<Tile>().SetCode(x * 100 + y);
+                    tile.GetComponent<Tile>().SetCode(new Vector2(x,y));
                     tile.GetComponent<Tile>().isWalkable = roomLayout[x, y];
                     if (x > 0)
                     {

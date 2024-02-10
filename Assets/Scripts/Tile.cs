@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
@@ -14,10 +16,16 @@ public class Tile : MonoBehaviour
     private Tile bottomLeft;
     private Tile bottomRight;
 
-    private int code;
+    public int gCost { get; private set;}
+    public int hCost { get; private set;}
+    public int fCost { get { return gCost + hCost; } }
+
+    public Tile parent;
+
+    public Vector2 code { get; private set;}
     public bool isWalkable;
 
-    public void SetCode(int code)
+    public void SetCode(Vector2 code)
     {
         this.code = code;
     }
@@ -71,5 +79,67 @@ public class Tile : MonoBehaviour
             bottomRight.topLeft = this;
         }
 
+    }
+
+    public static IEnumerable<Tile> GetNeighbours(Tile currentTile)
+    {
+
+        List<Tile> neighbours = new List<Tile>();
+
+        if (currentTile.top != null)
+        {
+            neighbours.Add(currentTile.top);
+        }
+        if (currentTile.bottom != null)
+        {
+            neighbours.Add(currentTile.bottom);
+        }
+        if (currentTile.left != null)
+        {
+            neighbours.Add(currentTile.left);
+        }
+        if (currentTile.right != null)
+        {
+            neighbours.Add(currentTile.right);
+        }
+        if (currentTile.topLeft != null)
+        {
+            neighbours.Add(currentTile.topLeft);
+        }
+        if (currentTile.topRight != null)
+        {
+            neighbours.Add(currentTile.topRight);
+        }
+        if (currentTile.bottomLeft != null)
+        {
+            neighbours.Add(currentTile.bottomLeft);
+        }
+        if (currentTile.bottomRight != null)
+        {
+            neighbours.Add(currentTile.bottomRight);
+        }
+
+        return neighbours;
+    }
+
+    internal void SetGCost(int newMovementCostToNeighbour)
+    {
+        gCost = newMovementCostToNeighbour;
+    }
+
+    internal void SetHCost(int v)
+    {
+        hCost = v;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.CompareTag("Player"))
+        {
+            collision.gameObject.GetComponent<PlayerInput>().SetCurrentTile(this);
+        }else if(collision.gameObject.CompareTag("Enemy"))
+        {
+            collision.gameObject.GetComponent<EnemyMovement>().SetCurrentTile(this);
+        }
     }
 }
