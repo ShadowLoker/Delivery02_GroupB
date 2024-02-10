@@ -31,9 +31,10 @@ public class EnemyAI : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component
+        OnPathComplete?.Invoke();
         StartCoroutine(Patrol());
 
-        OnPathComplete?.Invoke();
+
     }
 
     void Update()
@@ -74,15 +75,24 @@ public class EnemyAI : MonoBehaviour
     IEnumerator Patrol()
     {
         isPatrolling = true;
-        
         while (isPatrolling)
         {
             if (Vector2.Distance(transform.position, pathPoints[currentPatrolIndex].transform.position) < 0.2f)
             {
-                currentPatrolIndex = (currentPatrolIndex + 1) % pathPoints.Count;
-                isPatrolling = false;
-                OnPathComplete?.Invoke();
-                ReturnToPatrol();
+                currentPatrolIndex++;
+                if (currentPatrolIndex >= pathPoints.Count)
+                {
+                    currentPatrolIndex = 0;
+                    OnPathComplete?.Invoke();
+                    //Should wait
+                    isPatrolling = false;
+                    ReturnToPatrol();
+                }
+                //this should be a coroutine that rotates the enemy to the next point
+                Vector2 directionToNextPatrolPoint = (pathPoints[currentPatrolIndex].transform.position - transform.position).normalized;
+                Vector2 roundedDirection = RoundDirectionToEightWay(directionToNextPatrolPoint);
+                yield return StartCoroutine(RotateToDirection(roundedDirection, 200f));
+                StartCoroutine(Patrol());
 
             }
             else
