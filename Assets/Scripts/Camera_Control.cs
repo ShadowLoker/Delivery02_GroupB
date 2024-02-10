@@ -17,11 +17,13 @@ public class Camera_Control : MonoBehaviour
 
     private void Update()
     {
+     
+
         desiredPosition = target.position + new Vector3(0.0f, 0.0f, -10.0f);
         Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
         transform.position = smoothedPosition;
 
-        // Adjust the camera's orthographic size based on the screen's height and the desired pixels per unit
-        camera.orthographicSize = Screen.height / (2.0f * pixelsPerUnit);
+        
+
     }
 }
