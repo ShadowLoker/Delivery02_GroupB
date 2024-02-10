@@ -11,6 +11,8 @@ public class EnemyAI : MonoBehaviour
 
     public float speed = 1f; // Speed of the enemy in pixels per frame
 
+    public delegate void pathComplete();
+    public pathComplete OnPathComplete;
 
     public Transform[] patrolPoints; // The patrol points
     private int currentPatrolIndex = 0; // The current patrol point index
@@ -29,6 +31,8 @@ public class EnemyAI : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component
         StartCoroutine(Patrol());
+
+        OnPathComplete?.Invoke();
     }
 
     void Update()
@@ -69,13 +73,14 @@ public class EnemyAI : MonoBehaviour
     IEnumerator Patrol()
     {
         isPatrolling = true;
+        
         while (isPatrolling)
         {
             if (Vector2.Distance(transform.position, patrolPoints[currentPatrolIndex].position) < 0.2f)
             {
                 currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
                 isPatrolling = false;
-
+                OnPathComplete?.Invoke();
                 ReturnToPatrol();
 
             }
@@ -98,7 +103,9 @@ public class EnemyAI : MonoBehaviour
         Vector2 roundedDirection = RoundDirectionToEightWay(directionToNextPatrolPoint);
         // Start the rotation coroutine
         yield return StartCoroutine(RotateToDirection(roundedDirection, 200f)); // Rotate over 1 second
+
         StartCoroutine(Patrol());
+
     }
 
 
