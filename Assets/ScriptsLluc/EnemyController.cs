@@ -15,7 +15,7 @@ public class EnemyController : MonoBehaviour
     private void Awake()
     {   
         enemyAI = GetComponent<EnemyAI>();
-        enemyAI.OnPathComplete += SearchPath;
+        enemyAI.OnSearchPath += SearchPath;
     }
     private void Start()
     {
@@ -30,7 +30,7 @@ public class EnemyController : MonoBehaviour
 
     private void OnDestroy()
     {
-        enemyAI.OnPathComplete -= SearchPath;
+        enemyAI.OnSearchPath -= SearchPath;
     }
 
 

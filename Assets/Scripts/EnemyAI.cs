@@ -13,7 +13,7 @@ public class EnemyAI : MonoBehaviour
     public float speed = 1f; // Speed of the enemy in pixels per frame
 
     public delegate void pathComplete();
-    public pathComplete OnPathComplete;
+    public pathComplete OnSearchPath;
 
     public List<Tile> pathPoints; // The patrol points
     private int currentPatrolIndex = 0; // The current patrol point index
@@ -31,7 +31,7 @@ public class EnemyAI : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component
-        OnPathComplete?.Invoke();
+        OnSearchPath?.Invoke();
         StartCoroutine(Patrol());
 
 
@@ -65,6 +65,7 @@ public class EnemyAI : MonoBehaviour
                 if (!isPatrolling)
                 {
                     rb.velocity = Vector2.zero;
+                    OnSearchPath?.Invoke();
                     StartCoroutine(ReturnToPatrol());
                 }
                 break;
@@ -83,12 +84,10 @@ public class EnemyAI : MonoBehaviour
                 if (currentPatrolIndex >= pathPoints.Count)
                 {
                     currentPatrolIndex = 0;
-                    OnPathComplete?.Invoke();
-                    //Should wait
+                    OnSearchPath?.Invoke();
                     isPatrolling = false;
                     ReturnToPatrol();
                 }
-                //this should be a coroutine that rotates the enemy to the next point
                 Vector2 directionToNextPatrolPoint = (pathPoints[currentPatrolIndex].transform.position - transform.position).normalized;
                 Vector2 roundedDirection = RoundDirectionToEightWay(directionToNextPatrolPoint);
                 yield return StartCoroutine(RotateToDirection(roundedDirection, 200f));

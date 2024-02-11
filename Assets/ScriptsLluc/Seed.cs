@@ -4,8 +4,10 @@ using UnityEngine;
 
 public static class Seed
 {
+    public static int width = 14;
+    public static int height = 15;
 
-    public static bool[,] GenerateRoomLayout(int width, int height)
+    public static bool[,] GenerateRoomLayout()
     {
 
         bool[,] roomLayout = new bool[width, height];
@@ -38,7 +40,27 @@ public static class Seed
             roomLayout[x, height - 3] = false;
         }
 
-        return roomLayout;
+        return layout1;
 
     }
+
+    private static bool[,] layout1 =
+    {
+        {false,false,false,false,false,false,false,false,false,false,false,false,false,false },
+        {false,false,false,false,false,false,false,false,true,true,true,true,true,false },
+        {false,true,true,true,true,false,true,true,true,true,true,true,true,false },
+        {false,true,true,true,true,true,true,false,true,true,true,true,true,false },
+        {false,true,true,true,true,false,true,false,true,true,true,true,true,false },
+        {false,true,false,false,false,false,true,false,false,false,true,false,false,false },
+        {false,true,true,false,false,true,true,true,false,false,true,false,false,false },
+        {false,true,true,true,true,true,true,true,true,true,true,true,false,false },
+        {false,true,true,false,false,true,true,true,false,false,false,true,false,false },
+        {false,true,true,false,false,false,true,false,false,false,true,true,true,false },
+        {false,false,true,false,false,false,true,true,true,true,true,true,true,false },
+        {false,false,true,false,false,false,true,false,false,false,true,true,true,false },
+        {false,true,true,true,true,true,true,true,true,false,false,false,true,false },
+        {false,true,true,true,true,true,true,true,true,true,true,true,false,false },
+        {false,false,false,false,false,false,false,false,false,false,false,false,false,false }
+    };
+
 }
