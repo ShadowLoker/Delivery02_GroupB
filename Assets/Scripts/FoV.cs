@@ -56,8 +56,8 @@ public class FoV : MonoBehaviour
     private void LateUpdate()
     {
 
-
         DrawFieldOfView();
+
     }
 
     public void StartChangingFieldOfView(bool increaseFov)

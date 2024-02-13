@@ -15,8 +15,9 @@ public class GridManager : MonoBehaviour
     void Start()
     {
         roomLayout = Seed.GenerateRoomLayout();
-        columns = roomLayout.Length;
+        columns = roomLayout.GetLength(0);
         rows = roomLayout.GetLength(1);
+        Debug.Log(columns+" "+rows);
         GenerateGrid();
     }
 

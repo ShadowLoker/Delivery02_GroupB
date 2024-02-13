@@ -11,6 +11,7 @@ public class EnemyController : MonoBehaviour
 
     public Transform PointA;
     public Transform PointB;
+    private Transform TargetPoint;
 
     private void Awake()
     {   
@@ -19,7 +20,7 @@ public class EnemyController : MonoBehaviour
     }
     private void Start()
     {
-        
+        TargetPoint = PointA;
     }
 
     public void SearchPath()

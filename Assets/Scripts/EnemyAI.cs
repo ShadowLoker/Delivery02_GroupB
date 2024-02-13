@@ -16,7 +16,7 @@ public class EnemyAI : MonoBehaviour
     public pathComplete OnSearchPath;
 
     public List<Tile> pathPoints; // The patrol points
-    private int currentPatrolIndex = 0; // The current patrol point index
+    private int currentPathPoint = 0; // The current patrol point index
     public float patrolSpeed = 0.5f; // Speed of the enemy while patrolling
     public float waitTime = 2f; // Time to wait at each patrol point
 
@@ -49,7 +49,6 @@ public class EnemyAI : MonoBehaviour
                 isPatrolling = false;
                 rb.velocity = Vector2.zero;
                 Vector2 directionToPlayer = (player.position - transform.position).normalized;
-
                 ChasePlayer(directionToPlayer);
                 break;
 
@@ -65,6 +64,7 @@ public class EnemyAI : MonoBehaviour
                 if (!isPatrolling)
                 {
                     rb.velocity = Vector2.zero;
+                    currentPathPoint = 0;
                     OnSearchPath?.Invoke();
                     StartCoroutine(ReturnToPatrol());
                 }
@@ -78,25 +78,25 @@ public class EnemyAI : MonoBehaviour
         isPatrolling = true;
         while (isPatrolling)
         {
-            if (Vector2.Distance(transform.position, pathPoints[currentPatrolIndex].transform.position) < 0.2f)
+            if (Vector2.Distance(transform.position, pathPoints[currentPathPoint].transform.position) < 0.1f)
             {
-                currentPatrolIndex++;
-                if (currentPatrolIndex >= pathPoints.Count)
+                currentPathPoint++;
+                if (currentPathPoint >= pathPoints.Count)
                 {
-                    currentPatrolIndex = 0;
+                    currentPathPoint = 0;
                     OnSearchPath?.Invoke();
                     isPatrolling = false;
                     ReturnToPatrol();
                 }
-                Vector2 directionToNextPatrolPoint = (pathPoints[currentPatrolIndex].transform.position - transform.position).normalized;
+                Vector2 directionToNextPatrolPoint = (pathPoints[currentPathPoint].transform.position - transform.position).normalized;
                 Vector2 roundedDirection = RoundDirectionToEightWay(directionToNextPatrolPoint);
                 yield return StartCoroutine(RotateToDirection(roundedDirection, 200f));
-                StartCoroutine(Patrol());
+                StartCoroutine(ReturnToPatrol());
 
             }
             else
             {
-                Vector2 direction = (pathPoints[currentPatrolIndex].transform.position - transform.position).normalized;
+                Vector2 direction = (pathPoints[currentPathPoint].transform.position - transform.position).normalized;
                 rb.velocity = direction * patrolSpeed;
                 Vector2 roundedDirection = RoundDirectionToEightWay(direction);
                 RotateToDirection(roundedDirection, 200f);
@@ -109,11 +109,10 @@ public class EnemyAI : MonoBehaviour
     {
         rb.velocity = Vector2.zero; // Stop the enemy
         yield return new WaitForSeconds(waitTime); // Wait at the patrol point
-        Vector2 directionToNextPatrolPoint = (pathPoints[currentPatrolIndex].transform.position - transform.position).normalized;
+        Vector2 directionToNextPatrolPoint = (pathPoints[currentPathPoint].transform.position - transform.position).normalized;
         Vector2 roundedDirection = RoundDirectionToEightWay(directionToNextPatrolPoint);
         // Start the rotation coroutine
         yield return StartCoroutine(RotateToDirection(roundedDirection, 200f)); // Rotate over 1 second
-
         StartCoroutine(Patrol());
 
     }
