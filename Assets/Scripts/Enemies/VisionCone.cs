@@ -9,12 +9,21 @@ public class VisionCone : MonoBehaviour
     public GameObject PlayerRef;
     public LayerMask TargetMask;
     public LayerMask ObstructionMask;
+    public float Speed;
     public bool CanSeePlayer { get; private set; }
 
     void Start()
     {
         PlayerRef = GameObject.FindGameObjectWithTag("Player");
         StartCoroutine(FOVCheck());
+    }
+    private void Update()
+    {
+        if(CanSeePlayer)
+        {
+            transform.position = Vector2.MoveTowards(this.transform.position, PlayerRef.transform.position, Speed * Time.deltaTime); //(Position enemy, TargetJoint2D, speed)
+            transform.rotation = Quaternion.Euler(Vector3.forward * Angle); 
+        } 
     }
     private IEnumerator FOVCheck()
     {
@@ -53,7 +62,7 @@ public class VisionCone : MonoBehaviour
         
         Gizmos.color = Color.white;
         UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.forward, Radius);
-        Vector3 Angle01 = DirectionFromAngle(-transform.eulerAngles.z, -Angle / 2);
+        Vector3 Angle01 = DirectionFromAngle(transform.eulerAngles.z, -Angle / 2);
         Vector3 Angle02 = DirectionFromAngle(-transform.eulerAngles.z, Angle / 2);
 
         Gizmos.color = Color.yellow;
@@ -64,13 +73,14 @@ public class VisionCone : MonoBehaviour
         {
             Gizmos.color = Color.green;
             Gizmos.DrawLine(transform.position, PlayerRef.transform.position);
+           
         }
 
     }
 
     private Vector2 DirectionFromAngle(float EulerY, float AngleInDegrees)
     {
-        AngleInDegrees += EulerY;
+        AngleInDegrees -= EulerY;
         return new Vector2(Mathf.Sin(AngleInDegrees*Mathf.Deg2Rad), Mathf.Cos(AngleInDegrees*Mathf.Deg2Rad));
     }
 }
