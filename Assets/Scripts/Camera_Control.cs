@@ -7,12 +7,12 @@ public class Camera_Control : MonoBehaviour
     public int pixelsPerUnit = 16; // The desired pixels per unit
 
     private Vector3 desiredPosition;
-    private Camera camera;
+    private Camera cam;
 
     private void Start()
     {
-        camera = GetComponent<Camera>();
-        camera.orthographic = true;
+        cam = GetComponent<Camera>();
+        cam.orthographic = true;
     }
 
     private void Update()

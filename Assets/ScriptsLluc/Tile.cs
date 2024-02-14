@@ -6,11 +6,8 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    private Tile top;
-    private Tile bottom;
-    private Tile left;
-    private Tile right;
 
+    private List<Tile> neighbours = new List<Tile>();
     public int gCost { get; private set;}
     public int hCost { get; private set;}
     public int fCost { get { return gCost + hCost; } }
@@ -31,50 +28,20 @@ public class Tile : MonoBehaviour
         {
             Debug.Log("Tile: " + code);
             Debug.Log("IsWalkable: " + isWalkable);
-            Debug.Log("Top: " + (top == null ? "null" : top.name));
-            Debug.Log("Bottom: " + (bottom == null ? "null" : bottom.name));
-            Debug.Log("Left: " + (left == null ? "null" : left.name));
-            Debug.Log("Right: " + (right == null ? "null" : right.name));
         }
     }
     
-    public void SetLeft (Tile left)
+    public void AddNeighbourTile(Tile neighbour)
     {
-        if(left == null)
+        if(neighbour == null || neighbours.Contains(neighbour))
             return;
-        this.left = left;
-        left.right = this;     
-    }
-    public void SetBottom(Tile bottom)
-    {
-        if(bottom == null)
-            return;
-        this.bottom = bottom;
-        bottom.top = this;
+        neighbours.Add(neighbour);
+        neighbour.AddNeighbourTile(this);
+
     }
 
-    public static IEnumerable<Tile> GetNeighbours(Tile currentTile)
+    public IEnumerable<Tile> GetNeighbours()
     {
-
-        List<Tile> neighbours = new List<Tile>();
-
-        if (currentTile.top != null)
-        {
-            neighbours.Add(currentTile.top);
-        }
-        if (currentTile.bottom != null)
-        {
-            neighbours.Add(currentTile.bottom);
-        }
-        if (currentTile.left != null)
-        {
-            neighbours.Add(currentTile.left);
-        }
-        if (currentTile.right != null)
-        {
-            neighbours.Add(currentTile.right);
-        }
-
         return neighbours;
     }
 

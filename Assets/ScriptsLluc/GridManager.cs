@@ -38,11 +38,11 @@ public class GridManager : MonoBehaviour
                     tile.GetComponent<Tile>().isWalkable = roomLayout[x, y];
                     if (x > 0)
                     {
-                        tile.GetComponent<Tile>().SetLeft(grid[x - 1, y].GetComponent<Tile>());
+                        tile.GetComponent<Tile>().AddNeighbourTile(grid[x - 1, y].GetComponent<Tile>());
                     }
                     if(y>0)
                     {
-                        tile.GetComponent<Tile>().SetBottom(grid[x, y - 1].GetComponent<Tile>());
+                        tile.GetComponent<Tile>().AddNeighbourTile(grid[x, y - 1].GetComponent<Tile>());
                     }
 
                 }

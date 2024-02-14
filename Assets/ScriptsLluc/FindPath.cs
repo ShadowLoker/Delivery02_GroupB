@@ -31,7 +31,7 @@ public class FindPath
                 return RetracePath(startTile, targetTile);
             }
 
-            foreach (Tile neighbour in Tile.GetNeighbours(currentTile))
+            foreach (Tile neighbour in currentTile.GetNeighbours())
             {
                 if (!neighbour.isWalkable || closedSet.Contains(neighbour))
                 {
