@@ -186,7 +186,6 @@ public class FoV : MonoBehaviour
 
     public PlayerDetectionState IsPlayerInFieldOfView()
     {
-        Debug.Log(partialDetectionMeter);
         Vector3 dirToPlayer = player.transform.position - transform.position;
         float angleToPlayer = Vector3.Angle(transform.up, dirToPlayer);
         float distanceToPlayer = dirToPlayer.magnitude;

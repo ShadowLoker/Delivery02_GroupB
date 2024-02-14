@@ -9,18 +9,27 @@ public class EnemyController : MonoBehaviour
 
     private EnemyAI enemyAI;
 
-    public Transform PointA;
-    public Transform PointB;
-    private Transform TargetPoint;
+    public Transform pointA;
+    public Transform pointB;
+    private Transform targetPoint;
+
+    private static GridManager grid;
 
     private void Awake()
-    {   
+    {
+        grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<GridManager>();
         enemyAI = GetComponent<EnemyAI>();
         enemyAI.OnSearchPath += SearchPath;
     }
+    private void Update()
+    {
+        if(grid==null)
+            grid = GetComponent<GridManager>();
+    }
     private void Start()
     {
-        TargetPoint = PointA;
+        
+        targetPoint = pointA;
     }
 
     public void SearchPath()
@@ -37,20 +46,19 @@ public class EnemyController : MonoBehaviour
 
     internal Tile GetCurrentTile()
     {
-        GridManager gridManager = FindObjectOfType<GridManager>();
-        return gridManager.GetTileAt(transform.position);
+        Debug.Log(grid.ToString());
+        return grid.GetTileAt(transform.position);
     }
 
     internal Tile GetNextPoint()
     {
-        GridManager gridManager = FindObjectOfType<GridManager>();
-        if (gridManager.GetTileAt(transform.position) == gridManager.GetTileAt(PointA.position))
+        if (grid.GetTileAt(transform.position) == grid.GetTileAt(pointA.position))
         {
-            return gridManager.GetTileAt(PointB.position);
+            return grid.GetTileAt(pointB.position);
         }
         else
         {
-            return gridManager.GetTileAt(PointA.position);
+            return grid.GetTileAt(pointA.position);
         }
     }
 

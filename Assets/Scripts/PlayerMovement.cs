@@ -32,7 +32,6 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector2 movementInput = input.GetMovementInput();
         isCrouching = input.GetCrouchInput();
-        Debug.Log("Movement input: " + movementInput);
 
         Vector3 movement = new Vector3(movementInput.x, movementInput.y, 0.0f);
 
