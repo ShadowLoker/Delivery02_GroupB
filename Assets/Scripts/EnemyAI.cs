@@ -15,6 +15,9 @@ public class EnemyAI : MonoBehaviour
     public delegate void pathComplete();
     public pathComplete OnSearchPath;
 
+    public delegate void patrolEnd();
+    public patrolEnd OnPatrolEnd;
+
     public List<Tile> pathPoints; // The patrol points
     private int currentPathPoint = 0; // The current patrol point index
     public float patrolSpeed = 0.5f; // Speed of the enemy while patrolling
@@ -84,13 +87,9 @@ public class EnemyAI : MonoBehaviour
                 if (currentPathPoint >= pathPoints.Count)
                 {
                     currentPathPoint = 0;
-                    OnSearchPath?.Invoke();
+                    OnPatrolEnd?.Invoke();
                     isPatrolling = false;
-                    ReturnToPatrol();
                 }
-                Vector2 directionToNextPatrolPoint = (pathPoints[currentPathPoint].transform.position - transform.position).normalized;
-                Vector2 roundedDirection = RoundDirectionToEightWay(directionToNextPatrolPoint);
-                yield return StartCoroutine(RotateToDirection(roundedDirection, 200f));
                 StartCoroutine(ReturnToPatrol());
 
             }

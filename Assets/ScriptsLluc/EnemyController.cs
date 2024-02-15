@@ -19,18 +19,16 @@ public class EnemyController : MonoBehaviour
     {
         grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<GridManager>();
         enemyAI = GetComponent<EnemyAI>();
+        targetPoint = pointA;
         enemyAI.OnSearchPath += SearchPath;
+        enemyAI.OnPatrolEnd += NextPoint;
     }
     private void Update()
     {
         if(grid==null)
             grid = GetComponent<GridManager>();
     }
-    private void Start()
-    {
-        
-        targetPoint = pointA;
-    }
+
 
     public void SearchPath()
     {
@@ -41,25 +39,31 @@ public class EnemyController : MonoBehaviour
     private void OnDestroy()
     {
         enemyAI.OnSearchPath -= SearchPath;
+        enemyAI.OnPatrolEnd -= NextPoint;
     }
 
 
     internal Tile GetCurrentTile()
-    {
-        Debug.Log(grid.ToString());
+    {      
         return grid.GetTileAt(transform.position);
     }
 
     internal Tile GetNextPoint()
     {
-        if (grid.GetTileAt(transform.position) == grid.GetTileAt(pointA.position))
+        return grid.GetTileAt(targetPoint.position);
+    }
+
+    internal void NextPoint()
+    {
+        if (targetPoint == pointA || Vector2.Distance(transform.position,pointA.transform.position) < 0.3f)
         {
-            return grid.GetTileAt(pointB.position);
+            targetPoint = pointB;
         }
         else
         {
-            return grid.GetTileAt(pointA.position);
+            targetPoint = pointA;
         }
+        SearchPath();
     }
 
 }

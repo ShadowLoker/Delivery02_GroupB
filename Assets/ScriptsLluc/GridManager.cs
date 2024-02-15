@@ -7,17 +7,16 @@ public class GridManager : MonoBehaviour
 {
     public GameObject walkTilePrefab;
     public GameObject wallTilePrefab;
-    public int columns = 10;
-    public int rows = 10;
+    public int columns;
+    public int rows;
     private bool[,] roomLayout;
-    private GameObject[,] grid;
+    private static GameObject[,] grid;
 
-    void Start()
+    void Awake()
     {
         roomLayout = Seed.GenerateRoomLayout();
         columns = roomLayout.GetLength(0);
         rows = roomLayout.GetLength(1);
-        Debug.Log(columns+" "+rows);
         GenerateGrid();
     }
 
