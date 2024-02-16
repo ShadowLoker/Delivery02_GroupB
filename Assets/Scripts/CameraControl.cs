@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Camera_Control : MonoBehaviour
+public class CameraControl : MonoBehaviour
 {
     public Transform target; // The target that the camera should follow
     public float smoothSpeed = 0.125f; // The speed at which the camera catches up with the target
