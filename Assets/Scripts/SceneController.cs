@@ -8,6 +8,7 @@ public class SceneController : MonoBehaviour
 {
     public delegate void ResetSceneInputDelegate();
     public static ResetSceneInputDelegate OnResetSceneInput;
+   
 
     public void Awake()
     {
@@ -52,6 +53,7 @@ public class SceneController : MonoBehaviour
     }
     public void Exit()
     {
+        //reset distance
         Debug.Log("Out");
         Application.Quit();
     }

@@ -1,10 +1,13 @@
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
+using static SceneController;
 
 
 public class PlayerInput : IMovementInput, IInteractionInput
 {
-
+    public static ResetSceneInputDelegate OnResetSceneInput;
     public Vector2 GetMovementInput()
+
     {
 
         float moveHorizontal = Input.GetAxisRaw("Horizontal");
@@ -21,4 +24,5 @@ public class PlayerInput : IMovementInput, IInteractionInput
     {
         return Input.GetKeyDown(KeyCode.Space);
     }
+    
 }
