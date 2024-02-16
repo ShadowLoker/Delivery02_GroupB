@@ -27,7 +27,7 @@ public class EnemyAI : MonoBehaviour
     public bool isPatrolling = true; // Is the enemy currently patrolling?
     public bool isMoving;
 
-
+    public PlayerDetectionState detectionState { get; private set; }
 
 
     private Rigidbody2D rb; // The enemy's Rigidbody2D component
@@ -39,12 +39,13 @@ public class EnemyAI : MonoBehaviour
         OnSearchPath?.Invoke();
         StartCoroutine(Patrol());
         isMoving = true;
+        AudioManager.AddEnemy(this); // Add the enemy to the list of enemies
 
     }
 
     void Update()
     {
-        PlayerDetectionState detectionState = fov.IsPlayerInFieldOfView();
+        detectionState = fov.IsPlayerInFieldOfView();
         
 
         switch (detectionState)
