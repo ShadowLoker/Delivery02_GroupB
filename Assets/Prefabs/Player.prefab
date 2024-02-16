@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 1694438572976919910}
   - component: {fileID: 2521596724309249967}
   - component: {fileID: 5971899332110034066}
-  - component: {fileID: 211991018193863667}
+  - component: {fileID: 5195339108415814165}
   - component: {fileID: 7395941675830438582}
+  - component: {fileID: 420776844818826524}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -131,8 +132,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!60 &211991018193863667
-PolygonCollider2D:
+--- !u!58 &5195339108415814165
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -164,26 +165,8 @@ PolygonCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
-    newSize: {x: 0.16, y: 0.16}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: -0.12881263, y: 0.37754184}
-      - {x: -0.38025144, y: 0.18510789}
-      - {x: -0.49955273, y: -0.0761362}
-      - {x: -0.5, y: -0.5}
-      - {x: 0.5, y: -0.5}
-      - {x: 0.49825975, y: -0.0617567}
-      - {x: 0.37515593, y: 0.18765578}
-      - {x: 0.13195266, y: 0.38225174}
-  m_UseDelaunayMesh: 0
+  serializedVersion: 2
+  m_Radius: 0.25
 --- !u!114 &7395941675830438582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,3 +180,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactionRange: 1
+--- !u!114 &420776844818826524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6409408935034974062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d3c3c3ecd7259c4ba23d6d1ffc51e26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Scoretext: {fileID: 0}
+  ScoreTextObj: {fileID: 0}
