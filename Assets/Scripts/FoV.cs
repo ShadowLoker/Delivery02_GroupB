@@ -53,10 +53,11 @@ public class FoV : MonoBehaviour
 
     }
 
-    private void LateUpdate()
+    private void Update()
     {
 
-        DrawFieldOfView();
+       if (GetComponentInParent<EnemyAI>().isMoving)
+       DrawFieldOfView();
 
     }
 
@@ -104,7 +105,7 @@ public class FoV : MonoBehaviour
     }
     void DrawFieldOfView()
     {
-        int stepCount = Mathf.RoundToInt(viewAngle * 100);
+        int stepCount = Mathf.RoundToInt(viewAngle * 10);
         float stepAngleSize = viewAngle / stepCount;
         List<Vector3> viewPoints = new List<Vector3>();
         for (int i = 0; i <= stepCount; i++)
@@ -141,7 +142,7 @@ public class FoV : MonoBehaviour
         viewMesh.RecalculateNormals();
     }
 
-
+    
 
     ViewCastInfo ViewCast(float globalAngle)
     {

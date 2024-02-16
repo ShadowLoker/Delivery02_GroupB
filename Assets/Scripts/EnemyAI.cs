@@ -24,6 +24,7 @@ public class EnemyAI : MonoBehaviour
     public float waitTime = 2f; // Time to wait at each patrol point
 
     public bool isPatrolling = true; // Is the enemy currently patrolling?
+    public bool isMoving;
 
 
 
@@ -36,7 +37,7 @@ public class EnemyAI : MonoBehaviour
         rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component
         OnSearchPath?.Invoke();
         StartCoroutine(Patrol());
-
+        isMoving = true;
 
     }
 
@@ -50,8 +51,10 @@ public class EnemyAI : MonoBehaviour
                 fov.StartChangingFieldOfView(true);
                 StopAllCoroutines();
                 isPatrolling = false;
+                isMoving = true;
                 rb.velocity = Vector2.zero;
                 Vector2 directionToPlayer = (player.position - transform.position).normalized;
+                
                 ChasePlayer(directionToPlayer);
                 break;
 
@@ -59,6 +62,7 @@ public class EnemyAI : MonoBehaviour
                 StopAllCoroutines();
                 isPatrolling = false;
                 rb.velocity = Vector2.zero;
+                isMoving = false;
                 break;
 
             case PlayerDetectionState.NotDetected:
@@ -70,6 +74,7 @@ public class EnemyAI : MonoBehaviour
                     currentPathPoint = 0;
                     OnSearchPath?.Invoke();
                     StartCoroutine(ReturnToPatrol());
+                    isMoving = true;
                 }
                 break;
         }
@@ -78,6 +83,7 @@ public class EnemyAI : MonoBehaviour
 
     IEnumerator Patrol()
     {
+        
         isPatrolling = true;
         while (isPatrolling)
         {
@@ -106,6 +112,7 @@ public class EnemyAI : MonoBehaviour
 
     IEnumerator ReturnToPatrol()
     {
+        
         rb.velocity = Vector2.zero; // Stop the enemy
         yield return new WaitForSeconds(waitTime); // Wait at the patrol point
         Vector2 directionToNextPatrolPoint = (pathPoints[currentPathPoint].transform.position - transform.position).normalized;
@@ -120,7 +127,7 @@ public class EnemyAI : MonoBehaviour
 
     void ChasePlayer(Vector2 direction)
     {
-
+        
         Vector2 roundedDirection = RoundDirectionToEightWay(direction);
         
 
@@ -133,6 +140,8 @@ public class EnemyAI : MonoBehaviour
 
     IEnumerator RotateToDirection(Vector2 direction, float speed)
     {
+
+        
         // Calculate the target angle
         float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90;
 
