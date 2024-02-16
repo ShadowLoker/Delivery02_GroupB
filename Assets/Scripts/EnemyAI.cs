@@ -7,6 +7,7 @@ using static FoV;
 public class EnemyAI : MonoBehaviour
 {
     public FoV fov;
+    public AudioManager audioManager; // Reference to the AudioManager
 
     public Transform player; // The player's transform
 
@@ -44,10 +45,12 @@ public class EnemyAI : MonoBehaviour
     void Update()
     {
         PlayerDetectionState detectionState = fov.IsPlayerInFieldOfView();
+        
 
         switch (detectionState)
         {
             case PlayerDetectionState.FullyDetected:
+                
                 fov.StartChangingFieldOfView(true);
                 StopAllCoroutines();
                 isPatrolling = false;
@@ -58,7 +61,10 @@ public class EnemyAI : MonoBehaviour
                 ChasePlayer(directionToPlayer);
                 break;
 
+
+
             case PlayerDetectionState.PartiallyDetected:
+                
                 StopAllCoroutines();
                 isPatrolling = false;
                 rb.velocity = Vector2.zero;

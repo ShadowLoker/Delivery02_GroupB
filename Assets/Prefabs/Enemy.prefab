@@ -78,12 +78,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fov: {fileID: 8511887936078124759}
+  audioManager: {fileID: 3782490137849834455, guid: 3484309c652f05f41ac43aef04646768,
+    type: 3}
   player: {fileID: 0}
   speed: 2
   pathPoints: []
   patrolSpeed: 0.5
   waitTime: 2
   isPatrolling: 1
+  isMoving: 0
 --- !u!212 &3191245502020145480
 SpriteRenderer:
   m_ObjectHideFlags: 0
