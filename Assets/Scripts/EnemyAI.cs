@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using static FoV;
 
 public class EnemyAI : MonoBehaviour
@@ -23,6 +24,7 @@ public class EnemyAI : MonoBehaviour
     private int currentPathPoint = 0; // The current patrol point index
     public float patrolSpeed = 0.5f; // Speed of the enemy while patrolling
     public float waitTime = 2f; // Time to wait at each patrol point
+    public float rotationSpeed = 200f; // Speed at which the enemy rotates
 
     public bool isPatrolling = true; // Is the enemy currently patrolling?
     public bool isMoving;
@@ -46,7 +48,7 @@ public class EnemyAI : MonoBehaviour
     void Update()
     {
         detectionState = fov.IsPlayerInFieldOfView();
-        
+        isMoving = rb.velocity != Vector2.zero;
 
         switch (detectionState)
         {
@@ -55,7 +57,6 @@ public class EnemyAI : MonoBehaviour
                 fov.StartChangingFieldOfView(true);
                 StopAllCoroutines();
                 isPatrolling = false;
-                isMoving = true;
                 rb.velocity = Vector2.zero;
                 Vector2 directionToPlayer = (player.position - transform.position).normalized;
                 
@@ -69,7 +70,6 @@ public class EnemyAI : MonoBehaviour
                 StopAllCoroutines();
                 isPatrolling = false;
                 rb.velocity = Vector2.zero;
-                isMoving = false;
                 break;
 
             case PlayerDetectionState.NotDetected:
@@ -81,10 +81,10 @@ public class EnemyAI : MonoBehaviour
                     currentPathPoint = 0;
                     OnSearchPath?.Invoke();
                     StartCoroutine(ReturnToPatrol());
-                    isMoving = true;
                 }
                 break;
         }
+        
     }
 
 
@@ -102,8 +102,10 @@ public class EnemyAI : MonoBehaviour
                     currentPathPoint = 0;
                     OnPatrolEnd?.Invoke();
                     isPatrolling = false;
+                    StartCoroutine(ReturnToPatrol());
+                    yield break;
                 }
-                StartCoroutine(ReturnToPatrol());
+                StartCoroutine(Patrol());
 
             }
             else
@@ -111,7 +113,8 @@ public class EnemyAI : MonoBehaviour
                 Vector2 direction = (pathPoints[currentPathPoint].transform.position - transform.position).normalized;
                 rb.velocity = direction * patrolSpeed;
                 Vector2 roundedDirection = RoundDirectionToEightWay(direction);
-                RotateToDirection(roundedDirection, 200f);
+                
+                yield return RotateToDirection(roundedDirection);
                 yield return null;
             }
         }
@@ -125,7 +128,7 @@ public class EnemyAI : MonoBehaviour
         Vector2 directionToNextPatrolPoint = (pathPoints[currentPathPoint].transform.position - transform.position).normalized;
         Vector2 roundedDirection = RoundDirectionToEightWay(directionToNextPatrolPoint);
         // Start the rotation coroutine
-        yield return StartCoroutine(RotateToDirection(roundedDirection, 200f)); // Rotate over 1 second
+        yield return StartCoroutine(RotateToDirection(roundedDirection)); // Rotate over 1 second
         StartCoroutine(Patrol());
 
     }
@@ -145,7 +148,7 @@ public class EnemyAI : MonoBehaviour
         rb.velocity = roundedDirection * speed;
     }
 
-    IEnumerator RotateToDirection(Vector2 direction, float speed)
+    IEnumerator RotateToDirection(Vector2 direction)
     {
 
         
@@ -159,7 +162,7 @@ public class EnemyAI : MonoBehaviour
         while (Quaternion.Angle(transform.rotation, targetRotation) > 0.01f)
         {
             // Interpolate between the current rotation and the target rotation
-            float step = speed * Time.deltaTime;
+            float step = rotationSpeed * Time.deltaTime;
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, step);
 
             yield return null;
@@ -181,5 +184,22 @@ public class EnemyAI : MonoBehaviour
     internal void SetPathPoints(List<Tile> path)
     {
         pathPoints = path;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.blue;
+        if(pathPoints != null)
+        {
+            Tile previous = null;
+            foreach (Tile point in pathPoints)
+            {
+                if(previous != null)
+                {
+                    Gizmos.DrawLine(previous.transform.position, point.transform.position);
+                }
+                previous = point;
+            }
+        }
     }
 }

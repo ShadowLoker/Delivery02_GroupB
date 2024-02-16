@@ -53,12 +53,9 @@ public class FoV : MonoBehaviour
 
     }
 
-    private void Update()
+    private void LateUpdate()
     {
-
-       if (GetComponentInParent<EnemyAI>().isMoving)
-       DrawFieldOfView();
-
+            DrawFieldOfView();
     }
 
     public void StartChangingFieldOfView(bool increaseFov)
