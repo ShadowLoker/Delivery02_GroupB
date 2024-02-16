@@ -70,6 +70,8 @@ public class EnemyAI : MonoBehaviour
                 StopAllCoroutines();
                 isPatrolling = false;
                 rb.velocity = Vector2.zero;
+                directionToPlayer = (player.position - transform.position).normalized;
+                StartCoroutine(RotateToDirection(directionToPlayer));
                 break;
 
             case PlayerDetectionState.NotDetected:
