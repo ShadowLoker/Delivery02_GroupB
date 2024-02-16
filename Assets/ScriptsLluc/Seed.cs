@@ -9,7 +9,7 @@ public static class Seed
 
     public static bool[,] GenerateRoomLayout()
     {
-
+        /*
         bool[,] roomLayout = new bool[width, height];
 
         // Set all cells to true initially (walkable areas)
@@ -40,6 +40,18 @@ public static class Seed
             roomLayout[x, height - 3] = false;
         }
 
+        //set some random walls
+        for (int x = 2; x < width - 2; x++)
+        {
+            for (int y = 2; y < height - 2; y++)
+            {
+                if (Random.Range(0, 100) < 20)
+                {
+                    roomLayout[x, y] = false;
+                }
+            }
+        }
+        */
         return layout1;
 
     }

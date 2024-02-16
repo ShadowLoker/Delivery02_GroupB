@@ -11,8 +11,6 @@ public class PlayerInteraction : MonoBehaviour
     }
     private void Start()
     {
-        
-
         if (input == null)
         {
             Debug.LogError("InteractionInput reference is not set on PlayerInteraction.");

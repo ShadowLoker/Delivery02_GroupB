@@ -2,13 +2,13 @@
 using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
-    public int speed = 2; // Speed of the player in pixels per frame
+    public int speed = 5; // Speed of the player in pixels per frame
     public int crouchSpeed = 1; // Speed of the player when crouching
     private IMovementInput input;
 
     public bool isCrouching;
     public bool isMoving;
-
+    private int currentGems = 0;
     private Rigidbody2D rb;
 
 
@@ -38,8 +38,8 @@ public class PlayerMovement : MonoBehaviour
         if (movement != Vector3.zero)
         {
             isMoving = true;
-            int currentSpeed = isCrouching ? crouchSpeed : speed;
-            movement = movement.normalized * currentSpeed * Time.fixedDeltaTime;
+            int currentSpeed = isCrouching ? crouchSpeed : speed-currentGems;
+            movement = movement.normalized * (currentSpeed) * Time.fixedDeltaTime;
             transform.position += movement;
         }
         else
@@ -53,5 +53,11 @@ public class PlayerMovement : MonoBehaviour
     {
         GridManager gridManager = FindObjectOfType<GridManager>();
         return gridManager.GetTileAt(transform.position);
+    }
+
+    public void Collect()
+    {
+        currentGems++;
+        Debug.Log("Collected");
     }
 }

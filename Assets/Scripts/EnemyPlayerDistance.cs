@@ -16,7 +16,7 @@ public class PlayerDistanceTotal: MonoBehaviour
         AntPos = transform.position;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         float CalcDistance = Vector3.Distance(transform.position, AntPos);
         TotalDistance += CalcDistance;

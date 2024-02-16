@@ -10,11 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 1114403092648168415}
   - component: {fileID: 1694438572976919910}
-  - component: {fileID: 2521596724309249967}
+  - component: {fileID: 6219761405015050197}
   - component: {fileID: 5971899332110034066}
   - component: {fileID: 5195339108415814165}
   - component: {fileID: 7395941675830438582}
-  - component: {fileID: 420776844818826524}
+  - component: {fileID: 8128637760819353311}
+  - component: {fileID: 6570277699783233013}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -89,7 +90,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2521596724309249967
+--- !u!114 &6219761405015050197
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -180,7 +181,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactionRange: 1
---- !u!114 &420776844818826524
+--- !u!114 &8128637760819353311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6409408935034974062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 000e84739ea671b4e82a9189061e0a80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Scoretext: {fileID: 0}
+  ScoreTextObj: {fileID: 0}
+--- !u!114 &6570277699783233013
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

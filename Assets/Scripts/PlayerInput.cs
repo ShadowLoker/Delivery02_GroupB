@@ -6,6 +6,7 @@ using static SceneController;
 public class PlayerInput : IMovementInput, IInteractionInput
 {
     public static ResetSceneInputDelegate OnResetSceneInput;
+
     public Vector2 GetMovementInput()
 
     {
