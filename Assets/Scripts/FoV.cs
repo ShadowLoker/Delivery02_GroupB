@@ -226,6 +226,8 @@ public class FoV : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, soundDetectionRadius);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(transform.position, player.transform.position);
     }
 
 }
